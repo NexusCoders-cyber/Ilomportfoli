@@ -1,0 +1,31 @@
+app:
+  name: portfolio
+  services:
+    - name: web
+      type: web
+      git:
+        branch: main
+        buildCommand: npm install && npm run build
+        runCommand: npm run start
+      instance:
+        type: free
+      ports:
+        - port: 5000
+          protocol: http
+      env:
+        - key: NODE_ENV
+          value: production
+        - key: PORT
+          value: "5000"
+        - key: MONGODB_URI
+          secret: mongodb-uri
+        - key: JWT_SECRET
+          secret: jwt-secret
+        - key: ADMIN_EMAIL
+          secret: admin-email
+        - key: ADMIN_PASSWORD
+          secret: admin-password
+      healthcheck:
+        http:
+          path: /
+          port: 5000
