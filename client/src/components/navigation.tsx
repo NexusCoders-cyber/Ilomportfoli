@@ -28,35 +28,32 @@ export function Navigation() {
     <nav className="sticky top-0 z-50 border-b bg-background/80 backdrop-blur-lg">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
-          {/* Logo */}
           <Link href="/">
-            <a className="text-xl font-bold bg-gradient-to-r from-primary to-chart-2 bg-clip-text text-transparent hover-elevate" data-testid="link-home">
+            <span className="text-xl font-bold bg-gradient-to-r from-primary to-chart-2 bg-clip-text text-transparent hover-elevate cursor-pointer" data-testid="link-home">
               Portfolio
-            </a>
+            </span>
           </Link>
 
-          {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-1">
             {navItems.map((item) => (
               <Link key={item.path} href={item.path}>
-                <a data-testid={`link-nav-${item.label.toLowerCase().replace(" ", "-")}`}>
-                  <Button
-                    variant="ghost"
-                    className={`relative ${
-                      isActive(item.path) ? "text-primary" : ""
-                    }`}
-                  >
-                    {item.label}
-                    {isActive(item.path) && (
-                      <motion.div
-                        layoutId="active-nav"
-                        className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary"
-                        initial={false}
-                        transition={{ type: "spring", stiffness: 380, damping: 30 }}
-                      />
-                    )}
-                  </Button>
-                </a>
+                <Button
+                  variant="ghost"
+                  className={`relative ${
+                    isActive(item.path) ? "text-primary" : ""
+                  }`}
+                  data-testid={`link-nav-${item.label.toLowerCase().replace(" ", "-")}`}
+                >
+                  {item.label}
+                  {isActive(item.path) && (
+                    <motion.div
+                      layoutId="active-nav"
+                      className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary"
+                      initial={false}
+                      transition={{ type: "spring", stiffness: 380, damping: 30 }}
+                    />
+                  )}
+                </Button>
               </Link>
             ))}
           </div>
@@ -93,7 +90,6 @@ export function Navigation() {
         </div>
       </div>
 
-      {/* Mobile Menu */}
       <AnimatePresence>
         {mobileMenuOpen && (
           <motion.div
@@ -106,18 +102,14 @@ export function Navigation() {
             <div className="px-4 py-4 space-y-1">
               {navItems.map((item) => (
                 <Link key={item.path} href={item.path}>
-                  <a
+                  <Button
                     onClick={() => setMobileMenuOpen(false)}
-                    className="block"
+                    variant={isActive(item.path) ? "secondary" : "ghost"}
+                    className="w-full justify-start"
                     data-testid={`link-mobile-${item.label.toLowerCase().replace(" ", "-")}`}
                   >
-                    <Button
-                      variant={isActive(item.path) ? "secondary" : "ghost"}
-                      className="w-full justify-start"
-                    >
-                      {item.label}
-                    </Button>
-                  </a>
+                    {item.label}
+                  </Button>
                 </Link>
               ))}
             </div>

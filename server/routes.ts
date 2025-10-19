@@ -1,4 +1,4 @@
-import type { Express } from "express";
+import type { Express, Request, Response, NextFunction } from "express";
 import { createServer, type Server } from "http";
 import bcrypt from "bcrypt";
 import { body, validationResult } from "express-validator";
@@ -14,8 +14,7 @@ import {
 import { generateSlug } from "./utils/slug";
 
 export async function registerRoutes(app: Express): Promise<Server> {
-  // Validation middleware
-  const validate = (req: any, res: any, next: any) => {
+  const validate = (req: Request, res: Response, next: NextFunction) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
@@ -31,7 +30,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       body("password").isLength({ min: 8 }),
     ],
     validate,
-    async (req, res) => {
+    async (req: Request, res: Response) => {
       try {
         const { email, password } = req.body;
 
@@ -55,7 +54,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   );
 
   // Project Routes
-  app.get("/api/projects", async (req, res) => {
+  app.get("/api/projects", async (req: Request, res: Response) => {
     try {
       const projects = await ProjectModel.find().sort({ createdAt: -1 });
       res.json(projects);
@@ -64,7 +63,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get("/api/projects/:slug", async (req, res) => {
+  app.get("/api/projects/:slug", async (req: Request, res: Response) => {
     try {
       const project = await ProjectModel.findOne({ slug: req.params.slug });
       if (!project) {
@@ -85,7 +84,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       body("stack").isArray(),
     ],
     validate,
-    async (req, res) => {
+    async (req: Request, res: Response) => {
       try {
         const slug = generateSlug(req.body.title);
         const project = await ProjectModel.create({
@@ -103,7 +102,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.put(
     "/api/projects/:id",
     authenticateToken,
-    async (req, res) => {
+    async (req: Request, res: Response) => {
       try {
         const project = await ProjectModel.findById(req.params.id);
         if (!project) {
@@ -130,7 +129,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.delete(
     "/api/projects/:id",
     authenticateToken,
-    async (req, res) => {
+    async (req: Request, res: Response) => {
       try {
         await ProjectModel.findByIdAndDelete(req.params.id);
         res.json({ message: "Project deleted" });
@@ -141,7 +140,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   );
 
   // Update/Blog Routes
-  app.get("/api/updates", async (req, res) => {
+  app.get("/api/updates", async (req: Request, res: Response) => {
     try {
       const updates = await UpdateModel.find().sort({ createdAt: -1 });
       res.json(updates);
@@ -150,7 +149,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get("/api/updates/:slug", async (req, res) => {
+  app.get("/api/updates/:slug", async (req: Request, res: Response) => {
     try {
       const update = await UpdateModel.findOne({ slug: req.params.slug });
       if (!update) {
@@ -171,7 +170,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       body("tags").isArray(),
     ],
     validate,
-    async (req, res) => {
+    async (req: Request, res: Response) => {
       try {
         const slug = generateSlug(req.body.title);
         const updateData: any = {
@@ -195,7 +194,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.put(
     "/api/updates/:id",
     authenticateToken,
-    async (req, res) => {
+    async (req: Request, res: Response) => {
       try {
         const update = await UpdateModel.findById(req.params.id);
         if (!update) {
@@ -227,7 +226,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.delete(
     "/api/updates/:id",
     authenticateToken,
-    async (req, res) => {
+    async (req: Request, res: Response) => {
       try {
         await UpdateModel.findByIdAndDelete(req.params.id);
         res.json({ message: "Post deleted" });
@@ -238,7 +237,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   );
 
   // Bot Info Routes
-  app.get("/api/bot", async (req, res) => {
+  app.get("/api/bot", async (req: Request, res: Response) => {
     try {
       const botInfo = await BotInfoModel.findOne();
       if (!botInfo) {
@@ -260,7 +259,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       body("githubRepo").isURL(),
     ],
     validate,
-    async (req, res) => {
+    async (req: Request, res: Response) => {
       try {
         let botInfo = await BotInfoModel.findOne();
         
@@ -287,7 +286,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     "/api/upload",
     authenticateToken,
     upload.single("image"),
-    async (req, res) => {
+    async (req: Request, res: Response) => {
       try {
         if (!req.file) {
           return res.status(400).json({ message: "No file uploaded" });
@@ -305,7 +304,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   );
 
   // Contact Message Routes
-  app.get("/api/contact", authenticateToken, async (req, res) => {
+  app.get("/api/contact", authenticateToken, async (req: Request, res: Response) => {
     try {
       const messages = await ContactMessageModel.find().sort({ createdAt: -1 });
       res.json(messages);
@@ -322,7 +321,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       body("message").isLength({ min: 10 }),
     ],
     validate,
-    async (req, res) => {
+    async (req: Request, res: Response) => {
       try {
         const message = await ContactMessageModel.create(req.body);
         res.status(201).json(message);
@@ -336,7 +335,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.patch(
     "/api/contact/:id",
     authenticateToken,
-    async (req, res) => {
+    async (req: Request, res: Response) => {
       try {
         const message = await ContactMessageModel.findByIdAndUpdate(
           req.params.id,
