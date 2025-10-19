@@ -62,8 +62,9 @@ export async function seedDatabase() {
   console.log("✅ Database seeding completed");
 }
 
-// Run seed if called directly
-if (require.main === module) {
+// Run seed if called directly (ES module compatible)
+const isMainModule = import.meta.url === `file://${process.argv[1]}`;
+if (isMainModule) {
   seedDatabase()
     .then(() => process.exit(0))
     .catch((error) => {
